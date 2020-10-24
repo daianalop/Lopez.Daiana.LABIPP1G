@@ -31,7 +31,8 @@ char menu()//Menu principal
 	printf("g) Listar servicios\n");
 	printf("h) Alta Trabajo\n");
 	printf("i) Listar Trabajo\n");
-	printf("j) Salir\n\n");
+	printf("j) Listar Trabajo\n");
+	printf("k) Salir\n\n");
 	printf("Ingrese opcion: ");
 	fflush(stdin);
 	opcion = tolower(getchar());
@@ -124,6 +125,67 @@ int buscarLibre(eNotebook notebooks[], int tam )//funcion necesaria para dar de 
 	return indice;
 }
 
+
+
+
+char* modelosFijos(char modelos[])
+{
+	int modeloElegido;
+	int flagOk = 0;
+	if(modelos!=NULL){
+		do
+		{
+			printf("****Elija el modelo que desee****\n");
+				printf("1) Predator.\n"
+						"2) Omen.\n"
+						"3) Envy.\n"
+						"4) Endurance 45.\n"
+						"5) Pavilion.\n"
+						"6) Starter 78i.\n"
+						"7) Galion. \n");
+				scanf("%d", &modeloElegido);
+
+			switch(modeloElegido)
+			{
+				case 1:
+					strcpy(modelos, "Predator");
+					flagOk =1;
+					break;
+				case 2:
+					strcpy(modelos, "Omen");
+					flagOk =1;
+					break;
+				case 3:
+					strcpy(modelos, "Envy");
+					flagOk =1;
+					break;
+				case 4:
+					strcpy(modelos, "Endurance 45");
+					flagOk =1;
+					break;
+				case 5:
+					strcpy(modelos, "Pavilion");
+					flagOk =1;
+					break;
+				case 6:
+					strcpy(modelos, "Starter 78i");
+					flagOk =1;
+					break;
+				case 7:
+					strcpy(modelos, "Galion");
+					flagOk =1;
+					break;
+				default:
+					printf("No existe esa opcion.\n");
+					flagOk = 0;
+					break;
+			}
+		}while(flagOk == 0);
+	}
+
+	return modelos;
+}
+
 int altaNotebook(eNotebook notebooks[], int tam, eMarca marcas[], int tamM, eTipo tipos[], int tamT, int id)
 {
 	int error = 1;
@@ -131,7 +193,6 @@ int altaNotebook(eNotebook notebooks[], int tam, eMarca marcas[], int tamM, eTip
 	int auxIdMarca;
 	int auxIdTipo;
 	char auxModelo[20];
-	int esModelo = 0;
 	eNotebook nuevaNotebook;
 
 	if(notebooks != NULL && tam > 0 && id > 0)
@@ -147,21 +208,10 @@ int altaNotebook(eNotebook notebooks[], int tam, eMarca marcas[], int tamM, eTip
 			nuevaNotebook.id = id;
 			nuevaNotebook.isEmpty = 0;
 
-			do
-			{
-				printf("Ingrese Modelo: ");
-				fflush(stdin);
-				gets(auxModelo);
-				if(esAlfaNumerico(auxModelo) != 0)
-				{
-					esModelo =  1;
-					strcpy(nuevaNotebook.modelo, auxModelo);
-				}
-			}while(esModelo == 0);
-
-
-
-
+			// le paso por parametro la variable char
+			//donde guardare el modelo elegido
+			modelosFijos(auxModelo);
+			strcpy(nuevaNotebook.modelo, auxModelo);
 			do
 			{
 				mostrarMarcas(marcas, tamM);
@@ -189,11 +239,11 @@ int altaNotebook(eNotebook notebooks[], int tam, eMarca marcas[], int tamM, eTip
 			nuevaNotebook.idTipo = auxIdTipo;
 
 
-			printf("Ingrese Precio: ");
+			printf("Ingrese Precio (entre 1000 y 1000000): ");
 			scanf("%d", &nuevaNotebook.precio);
 			while(nuevaNotebook.precio < 1000 || nuevaNotebook.precio > 1000000)
 			{
-				printf("Error. Ingrese Modelo: ");
+				printf("Error. Ingrese Precio valido: ");
 				scanf("%d", &nuevaNotebook.precio);
 			}
 
@@ -248,7 +298,7 @@ int bajaNotebook(eNotebook notebooks[], int tam, eMarca marcas[], int tamM, eTip
 		else
 		{
 			mostrarNotebook(notebooks[indice], marcas, tamM, tipos, tamT);
-			printf("Confirma borrado?: ");
+			printf("Confirma borrado? (s/n): ");
 			fflush(stdin);
 			scanf("%c", &confirma);
 
@@ -266,24 +316,6 @@ int bajaNotebook(eNotebook notebooks[], int tam, eMarca marcas[], int tamM, eTip
 
 	return error;
 
-}
-
-int esAlfaNumerico(char str[])
-{
-	int i = 0;
-
-	while(str[i] != '\0')
-	{
-		if((str[i] != ' ') && (str[i] < 'a' || str[i] > 'z') && (str[i] < 'A' || str[i] > 'Z') && (str[i]<'0' || str[i] > '9'))
-		{
-			return 0;
-
-		}
-
-		i++;
-	}
-
-	return 1;
 }
 
 int modificarNotebook(eNotebook notebooks[], int tam, eMarca marcas[], int tamM, eTipo tipos[], int tamT)
@@ -355,6 +387,12 @@ int modificarNotebook(eNotebook notebooks[], int tam, eMarca marcas[], int tamM,
 								printf("Ingrese Nuevo Precio (1000/1000000): ");
 								fflush(stdin);
 								scanf("%d", &auxCambioNotebook.precio);
+								while(auxCambioNotebook.precio <1000 || auxCambioNotebook.precio>1000000)
+								{
+									printf("ERROR.Ingrese Nuevo Precio (1000/1000000): ");
+									fflush(stdin);
+									scanf("%d", &auxCambioNotebook.precio);
+								}
 								notebooks[indice].precio = auxCambioNotebook.precio;
 								printf("\nPrecio modificado con exito.\n");
 								error = 0;
@@ -406,7 +444,7 @@ void sortNotebooks(eNotebook notebooks[], int tamN, eMarca marcas[], int tamM, e
                 notebooks[i] = notebooks[j];
                 notebooks[j] = auxNotebook;
             }
-            if (notebooks[i].idMarca == notebooks[j].idMarca && notebooks[i].precio > notebooks[j].precio && !notebooks[i].isEmpty && !notebooks[i].isEmpty)
+            else if (notebooks[i].idMarca == notebooks[j].idMarca && notebooks[i].precio > notebooks[j].precio && !notebooks[i].isEmpty && !notebooks[i].isEmpty)
             {
                 auxNotebook = notebooks[i];
                 notebooks[i] = notebooks[j];

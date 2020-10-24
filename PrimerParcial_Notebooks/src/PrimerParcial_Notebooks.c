@@ -17,11 +17,14 @@
 #include "tipo.h"
 #include "servicio.h"
 #include "trabajo.h"
+#include "informes.h"
+#include "menuInformes.h"
 
 #define TAM 10
 #define TAM_M 4
 #define TAM_T 4
 #define TAM_S 4
+
 
 
 
@@ -33,6 +36,7 @@ int main(void) {
 	int proximoIdNotebooks = 3000;
 	int proximoIdTrabajos = 7000;
 	int respuesta;
+	int flagFirstEntrance = 0;
 	eNotebook notebooks[TAM];
 	eTrabajos trabajos[TAM];
 	eMarca marcas[TAM_M]=
@@ -72,46 +76,72 @@ int main(void) {
 					{
 						proximoIdNotebooks++;
 						printf("\nAlta realizada con exito\n");
+						flagFirstEntrance++;
 					}
 					else
 					{
 						printf("Problemas para realizar el alta\n\n");
 					}
+
+
 					break;
 				case 'b':
-					respuesta = modificarNotebook(notebooks, TAM, marcas, TAM_M, tipos, TAM_T);
-					if(respuesta == 0)
+					if(flagFirstEntrance)
 					{
-						printf("Modificacion exitosa");
-					}
-					else if(respuesta == 2)
-					{
-						printf("La modificacion se ha cancelado por el usuario");
+						respuesta = modificarNotebook(notebooks, TAM, marcas, TAM_M, tipos, TAM_T);
+						if(respuesta == 0)
+						{
+							printf("Modificacion exitosa\n");
+						}
+						else if(respuesta == 2)
+						{
+							printf("La modificacion se ha cancelado por el usuario\n");
+						}
+						else
+						{
+							printf("Se ha producido un error en la modificacion\n"); //si huno un error en los parametros
+						}
 					}
 					else
 					{
-						printf("Se ha producido un error en la modificacion"); //si huno un error en los parametros
+						printf("Para modificar una notebook primero deberia dar de alta una, sino no hay notebooks para modificar.\n");
 					}
 					break;
 				case 'c':
-					respuesta = bajaNotebook(notebooks, TAM, marcas, TAM_M, tipos, TAM_T);
-					if(respuesta == 0)
+					if(flagFirstEntrance)
 					{
-						printf("Baja exitosa");
-					}
-					else if(respuesta == 2)
-					{
-						printf("La baja se ha cancelado por el usuario");
+						respuesta = bajaNotebook(notebooks, TAM, marcas, TAM_M, tipos, TAM_T);
+						if(respuesta == 0)
+						{
+							printf("Baja exitosa");
+							flagFirstEntrance--;
+						}
+						else if(respuesta == 2)
+						{
+							printf("La baja se ha cancelado por el usuario");
+						}
+						else
+						{
+							printf("Se ha producido un error en la baja"); //si huno un error en los parametros
+						}
 					}
 					else
 					{
-						printf("Se ha producido un error en la baja"); //si huno un error en los parametros
+						printf("Si desea dar de baja una notebook lo primero que deberia hacer es dar de alta una, sino no hay notebook que modificar \n");
 					}
 					break;
 				case 'd':
+					if(flagFirstEntrance)
+					{
 					system("cls");
-					mostrarNotebooks(notebooks, TAM, marcas, TAM_M, tipos, TAM_T);
-					sortNotebooks(notebooks, TAM, marcas, TAM_M, tipos, TAM_T);
+						sortNotebooks(notebooks, TAM, marcas, TAM_M, tipos, TAM_T);
+						mostrarNotebooks(notebooks, TAM, marcas, TAM_M, tipos, TAM_T);
+					}
+					else
+					{
+						printf("No hay notebooks que mostrar porque no hay ninguna notebook dada de alta\n");
+					}
+
 					break;
 				case 'e':
 					system("cls");
@@ -138,9 +168,12 @@ int main(void) {
 					break;
 				case 'i':
 					system("cls");
-					mostrarTrabajos(trabajos, TAM, notebooks, TAM);
+					mostrarTrabajos(trabajos, TAM, notebooks, TAM, servicios, TAM_S);
 					break;
 				case 'j':
+					informes(trabajos, TAM, notebooks, TAM, tipos, TAM_T, marcas, TAM_M, servicios, TAM_S);
+					break;
+				case 'k':
 					 printf("Confirma salida?: ");
 					fflush(stdin);
 					scanf("%c", &confirmaSalida);

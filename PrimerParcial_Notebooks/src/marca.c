@@ -61,3 +61,16 @@ int mostrarMarcas(eMarca marcas[], int tam)
 	return error;
 
 }
+
+int buscarMarcaPorId(int id, eMarca marcas[], int tamM)
+{
+	int indice = -1;
+
+	for(int i = 0; i < tamM; i++){
+		if(marcas[i].id == id){
+			indice = i;
+			break;
+		}
+	}
+	return indice;
+}

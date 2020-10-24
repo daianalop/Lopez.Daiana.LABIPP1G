@@ -58,12 +58,13 @@ int altaTrabajos(eTrabajos trabajos[], int tam,eNotebook notebooks[], int tamN, 
 	int auxIdNotebook;
 	int auxIdServicio;
 	int indiceNotebook;
+	int indiceServicio;
 	int dia;
 	int mes;
 	int anio;
 	eTrabajos nuevoTrabajo;
 
-	if(trabajos != NULL && tam > 0 && id > 0)
+	if(trabajos != NULL && notebooks!=NULL && tam > 0 && id > 0)
 	{
 		indice = buscarLibreTrabajo(trabajos, tam);
 
@@ -73,97 +74,99 @@ int altaTrabajos(eTrabajos trabajos[], int tam,eNotebook notebooks[], int tamN, 
 		}
 		else
 		{
-			nuevoTrabajo.id = id;
-			nuevoTrabajo.isEmpty = 0;
+
+				nuevoTrabajo.id = id;
+				nuevoTrabajo.isEmpty = 0;
 
 
-				mostrarNotebooks(notebooks, tam, marcas, tamM, tipos, tamT);
-				printf("Ingrese ID de la Notebook: ");
-				fflush(stdin);
-				scanf("%d", &auxIdNotebook);
-				indiceNotebook = buscarNotebook(notebooks, tam, auxIdNotebook);
-
-				while(indiceNotebook == -1)
-				{
-					printf("Error. Ingrese ID de la Notebook: ");
+					mostrarNotebooks(notebooks, tam, marcas, tamM, tipos, tamT);
+					printf("Ingrese ID de la Notebook: ");
 					fflush(stdin);
 					scanf("%d", &auxIdNotebook);
 					indiceNotebook = buscarNotebook(notebooks, tam, auxIdNotebook);
-				}
 
-				nuevoTrabajo.idNotebook = notebooks[indiceNotebook].id;
+					while(indiceNotebook == -1)
+					{
+						printf("Error. Ingrese ID de la Notebook: ");
+						fflush(stdin);
+						scanf("%d", &auxIdNotebook);
+						indiceNotebook = buscarNotebook(notebooks, tam, auxIdNotebook);
+					}
+
+					nuevoTrabajo.idNotebook = notebooks[indiceNotebook].id;
 
 
-				mostrarServicios(servicios, tamS);
-				printf("Ingrese ID Servicio: ");
-				fflush(stdin);
-				scanf("%d", &auxIdServicio);
-				while(auxIdServicio < 20000 || auxIdServicio > 20003)
-				{
-					printf("Error. Reingrese ID Servicio: ");
+					mostrarServicios(servicios, tamS);
+					printf("Ingrese ID Servicio: ");
 					fflush(stdin);
 					scanf("%d", &auxIdServicio);
-				}
+					indiceServicio = buscarServicio(servicios, tam, auxIdServicio);
+					while(indiceServicio == -1)
+					{
+						printf("Error. Reingrese ID Servicio: ");
+						fflush(stdin);
+						scanf("%d", &auxIdServicio);
+						indiceServicio = buscarServicio(servicios, tam, auxIdServicio);
+					}
 
-				nuevoTrabajo.idservicio = auxIdServicio;
+					nuevoTrabajo.idservicio = auxIdServicio;
 
-				printf("\nAhora necesitamos que nos de una fecha.\n");
-				printf("Ingrese dia: ");
-				fflush(stdin);
-				scanf("%d", &dia);
-				while(dia < 1 || dia > 31 )
-				{
-					printf("Error. Ingrese dia: ");
+					printf("\nAhora necesitamos que nos de una fecha.\n");
+					printf("Ingrese dia: ");
 					fflush(stdin);
 					scanf("%d", &dia);
-				}
+					while(dia < 1 || dia > 31 )
+					{
+						printf("Error. Ingrese dia: ");
+						fflush(stdin);
+						scanf("%d", &dia);
+					}
 
-				nuevoTrabajo.fecha.dia = dia;
+					nuevoTrabajo.fecha.dia = dia;
 
-				printf("Ingrese mes: ");
-				fflush(stdin);
-				scanf("%d", &mes);
-				while(mes < 1 || mes > 12 )
-				{
-					printf("Error. Ingrese mes : ");
+					printf("Ingrese mes: ");
 					fflush(stdin);
 					scanf("%d", &mes);
-				}
-				 nuevoTrabajo.fecha.mes =  mes;
+					while(mes < 1 || mes > 12 )
+					{
+						printf("Error. Ingrese mes : ");
+						fflush(stdin);
+						scanf("%d", &mes);
+					}
+					 nuevoTrabajo.fecha.mes =  mes;
 
-				printf("Ingrese año actual: ");
-				fflush(stdin);
-				scanf("%d", &anio);
-				while(anio != 2020 )
-				{
-					printf("Error. Ingrese año actual: ");
+					printf("Ingrese año actual: ");
 					fflush(stdin);
 					scanf("%d", &anio);
-				}
+					while(anio != 2020 )
+					{
+						printf("Error. Ingrese año actual: ");
+						fflush(stdin);
+						scanf("%d", &anio);
+					}
 
-				nuevoTrabajo.fecha.anio = anio;
+					nuevoTrabajo.fecha.anio = anio;
 
-				trabajos[indice] = nuevoTrabajo;
+					trabajos[indice] = nuevoTrabajo;
 
-			error = 0;
-
+				error = 0;
 		}
 	}
-
-
 
 	return error;
 }
 
 
 
-void mostrarTrabajo(eTrabajos trabajo ,eNotebook notebooks[],int tamNote){
+void mostrarTrabajo(eTrabajos trabajo ,eNotebook notebooks[],int tamNote, eServicio servicios[], int tamServ){
 	char modelo[20];
+	char servicio[20];
 	cargarDescripcionNotebook(modelo, trabajo.idNotebook,notebooks, tamNote);
-	printf("  %d      %d    %10s   %d    %d/%d/%d\n", trabajo.id, trabajo.idNotebook,modelo, trabajo.idservicio, trabajo.fecha.dia, trabajo.fecha.mes,trabajo.fecha.anio);
+	cargarDescripcionServicio(servicio, trabajo.idservicio, servicios, tamServ);
+	printf("   %d              %s       %10s       %d/%d/%d\n", trabajo.id,modelo, servicio, trabajo.fecha.dia, trabajo.fecha.mes,trabajo.fecha.anio);
 }
 
-int mostrarTrabajos(eTrabajos trabajos[], int tam, eNotebook notebooks[], int tamNote)
+int mostrarTrabajos(eTrabajos trabajos[], int tam, eNotebook notebooks[], int tamNote, eServicio servicios[], int tamServ)
 {
 	int error =1;
 
@@ -171,12 +174,13 @@ int mostrarTrabajos(eTrabajos trabajos[], int tam, eNotebook notebooks[], int ta
 	{
 		printf("    **** Listado de Trabajos****    \n");
 		printf("-------------------------------------\n");
-		printf("     ID          IdNotebook       Servicio        Fecha\n");
+		printf("     ID          Modelo Notebook       Servicio        Fecha\n");
+
 		for(int i =0 ; i<tam; i++)
 		{
 			if(trabajos[i].isEmpty == 0)
 			{
-				mostrarTrabajo(trabajos[i], notebooks, tamNote);
+				mostrarTrabajo(trabajos[i], notebooks, tamNote, servicios, tamServ);
 			}
 		}
 
@@ -188,3 +192,5 @@ int mostrarTrabajos(eTrabajos trabajos[], int tam, eNotebook notebooks[], int ta
 	return error;
 
 }
+
+

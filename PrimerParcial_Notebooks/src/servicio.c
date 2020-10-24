@@ -40,3 +40,33 @@ int mostrarServicios(eServicio servicios[], int tam)
 	return error;
 
 }
+
+int buscarServicio(eServicio servicios[], int tam, int id)
+{
+	int indice = -1;
+
+	for(int i = 0; i < tam; i++)
+	{
+		if(servicios[i].id == id )
+		{
+			indice = i;
+			break;
+		}
+	}
+
+	return indice;
+}
+
+int cargarDescripcionServicio(char descripcion[], int idServicio,eServicio list[], int tamServicio)
+{
+	int pudo = 0;
+
+	for (int i=0;i<tamServicio;i++){
+		if(list[i].id == idServicio){
+			strcpy(descripcion, list[i].descripcion);
+			pudo = 1;
+		}
+	}
+	return pudo;
+}
+
